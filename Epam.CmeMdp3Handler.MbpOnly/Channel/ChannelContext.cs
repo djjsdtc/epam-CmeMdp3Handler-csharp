@@ -198,6 +198,13 @@ namespace Epam.CmeMdp3Handler.Channel
                 listeners[i].OnStatisticsRefresh(_channel.GetId(), securityStatistics.GetSecurityId(), securityStatistics);
         }
 
+        public void NotifyTradeSummary(IPublicTrades publicTrades)
+        {
+            var listeners = _channel.GetMdListeners();
+            for (int i = 0; i < listeners.Count; i++)
+                listeners[i].OnTradeSummary(_channel.GetId(), publicTrades.GetSecurityId(), publicTrades);
+        }
+
         public void StopInstrumentFeeds()
         {
             _channel.StopInstrumentFeedA();

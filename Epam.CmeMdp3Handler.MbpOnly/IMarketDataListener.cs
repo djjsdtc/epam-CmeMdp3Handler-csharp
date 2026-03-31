@@ -80,5 +80,11 @@ namespace Epam.CmeMdp3Handler
         void OnSecurityStatus(string channelId, SbeString secGroup, SbeString secAsset,
             int securityId, int tradeDate, short matchEventIndicator,
             SecurityTradingStatus? secTrdStatus, HaltReason? haltReason, SecurityTradingEvent secTrdEvent);
+
+        /// <summary>Called when trade summary or electronic volume is updated.</summary>
+        /// <param name="channelId">Channel ID</param>
+        /// <param name="securityId">Security ID</param>
+        /// <param name="statistics">The updated trades</param>
+        void OnTradeSummary(string channelId, int securityId, IPublicTrades trades);
     }
 }
