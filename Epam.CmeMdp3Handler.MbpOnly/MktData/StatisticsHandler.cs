@@ -19,6 +19,9 @@ namespace Epam.CmeMdp3Handler.MktData
         private readonly Price _settlementPrice = new Price();
         private int _openInterest = 0;
         private int _clearedVolume = 0;
+        private readonly Price _highLimitPrice = new Price();
+        private readonly Price _lowLimitPrice = new Price();
+        private readonly Price _maxPriceVariation = new Price();
 
         private bool refreshed = false;
 
@@ -93,7 +96,10 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void UpdateThresholdLimitsAndPriceBandVariation(IFieldSet incrementEntry)
         {
-            // Not implemented
+            _highLimitPrice.SetMantissa(incrementEntry.GetInt64(1149));
+            _lowLimitPrice.SetMantissa(incrementEntry.GetInt64(1148));
+            _maxPriceVariation.SetMantissa(incrementEntry.GetInt64(1143));
+            refreshed = true;
         }
 
         public override void Clear()
@@ -108,6 +114,9 @@ namespace Epam.CmeMdp3Handler.MktData
             _settlementPrice.SetNull();
             _openInterest = 0;
             _clearedVolume = 0;
+            _highLimitPrice.SetNull();
+            _lowLimitPrice.SetNull();
+            _maxPriceVariation.SetNull();
             refreshed = false;
         }
 
@@ -136,5 +145,11 @@ namespace Epam.CmeMdp3Handler.MktData
         public int OpenInterest() => _openInterest;
 
         public int TradeVolume() => _clearedVolume;
+
+        public Price HighLimitPrice() => _highLimitPrice;
+
+        public Price LowLimitPrice() => _lowLimitPrice;
+
+        public Price MaxPriceVariation() => _maxPriceVariation;
     }
 }

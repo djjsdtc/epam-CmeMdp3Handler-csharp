@@ -13,5 +13,8 @@ namespace Epam.CmeMdp3Handler.MktData
         int TradeVolume();
         Price TradingSessionHighPrice();
         Price TradingSessionLowPrice();
+        Price HighLimitPrice();
+        Price LowLimitPrice();
+        Price MaxPriceVariation();
     }
 }
