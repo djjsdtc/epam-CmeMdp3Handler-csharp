@@ -189,6 +189,8 @@ namespace Epam.CmeMdp3Handler.Control
                 _channelContext.NotifyBookFullRefresh(_multipleDepthBookHandler);
             if (_impliedBookHandler != null)
                 _channelContext.NotifyImpliedBookFullRefresh(_impliedBookHandler);
+            if (_statisticsHandler != null)
+                _channelContext.NotifySecurityStatistics(_statisticsHandler);
         }
 
         public void HandleIncrementalRefreshEntry(IFieldSet incrementEntry)
@@ -258,6 +260,7 @@ namespace Epam.CmeMdp3Handler.Control
         {
             _multipleDepthBookHandler?.Clear();
             _impliedBookHandler?.Clear();
+            _statisticsHandler?.Clear();
         }
 
         internal void CommitEvent()
@@ -265,6 +268,7 @@ namespace Epam.CmeMdp3Handler.Control
             if (!_enabled) return;
             _multipleDepthBookHandler?.CommitEvent();
             _impliedBookHandler?.CommitEvent();
+            _statisticsHandler?.CommitEvent();
         }
     }
 }
