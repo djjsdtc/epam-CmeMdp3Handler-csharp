@@ -5,7 +5,7 @@ namespace Epam.CmeMdp3Handler.MktData
     public class ImpliedBookPriceEntry : IImpliedBookPriceLevel
     {
         protected int qty;
-        protected SbeDouble price = SbeDouble.NullInstance();
+        protected readonly SbeDouble price = SbeDouble.NullInstance();
 
         public int GetQuantity() => qty;
         public double? GetPrice() => price.AsNullableDouble();
@@ -20,7 +20,9 @@ namespace Epam.CmeMdp3Handler.MktData
         public void RefreshFromAnotherEntry(ImpliedBookPriceEntry bookEntry)
         {
             this.qty = bookEntry.qty;
-            this.price = bookEntry.price;
+            this.price.SetMantissa(bookEntry.price.GetMantissa());
+            this.price.SetExponent(bookEntry.price.GetExponent());
+            this.price.SetNull(bookEntry.price.IsNull());
         }
 
         public void RefreshFromMessage(IFieldSet fieldSet)

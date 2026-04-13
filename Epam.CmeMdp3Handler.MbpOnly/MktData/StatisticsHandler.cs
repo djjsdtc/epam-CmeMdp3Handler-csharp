@@ -9,13 +9,13 @@ namespace Epam.CmeMdp3Handler.MktData
         private const short FlagDailyOpenPrice = 0;
         private const short FlagIndicativeOpeningPrice = 5;
 
-        private SbeDouble _openingPrice = SbeDouble.NullInstance();
-        private SbeDouble _fixingPrice = SbeDouble.NullInstance();
-        private SbeDouble _indicativeOpeningPrice = SbeDouble.NullInstance();
-        private SbeDouble _sessionHighBid = SbeDouble.NullInstance();
-        private SbeDouble _sessionLowOffer = SbeDouble.NullInstance();
-        private SbeDouble _sessionHighPrice = SbeDouble.NullInstance();
-        private SbeDouble _sessionLowPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _openingPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _fixingPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _indicativeOpeningPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionHighBid = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionLowOffer = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionHighPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionLowPrice = SbeDouble.NullInstance();
         private int _openInterest = 0;
         private int _clearedVolume = 0;
 
