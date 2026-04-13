@@ -5,21 +5,22 @@ namespace Epam.CmeMdp3Handler.MktData
     public class ImpliedBookPriceEntry : IImpliedBookPriceLevel
     {
         protected int qty;
-        protected readonly Price price = new Price();
+        protected SbeDouble price = SbeDouble.NullInstance();
 
         public int GetQuantity() => qty;
-        public Price GetPrice() => price;
+        public double? GetPrice() => price.AsNullableDouble();
 
         public void Clear()
         {
             qty = 0;
-            price.SetNull();
+            price.Reset();
+            price.SetNull(true);
         }
 
         public void RefreshFromAnotherEntry(ImpliedBookPriceEntry bookEntry)
         {
             this.qty = bookEntry.qty;
-            this.price.SetMantissa(bookEntry.GetPrice().GetMantissa());
+            this.price = bookEntry.price;
         }
 
         public void RefreshFromMessage(IFieldSet fieldSet)

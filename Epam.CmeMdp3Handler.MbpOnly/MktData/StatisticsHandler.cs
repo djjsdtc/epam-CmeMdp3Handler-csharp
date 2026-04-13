@@ -9,13 +9,13 @@ namespace Epam.CmeMdp3Handler.MktData
         private const short FlagDailyOpenPrice = 0;
         private const short FlagIndicativeOpeningPrice = 5;
 
-        private readonly Price _openingPrice = new Price();
-        private readonly Price _fixingPrice = new Price();
-        private readonly Price _indicativeOpeningPrice = new Price();
-        private readonly Price _sessionHighBid = new Price();
-        private readonly Price _sessionLowOffer = new Price();
-        private readonly Price _sessionHighPrice = new Price();
-        private readonly Price _sessionLowPrice = new Price();
+        private SbeDouble _openingPrice = SbeDouble.NullInstance();
+        private SbeDouble _fixingPrice = SbeDouble.NullInstance();
+        private SbeDouble _indicativeOpeningPrice = SbeDouble.NullInstance();
+        private SbeDouble _sessionHighBid = SbeDouble.NullInstance();
+        private SbeDouble _sessionLowOffer = SbeDouble.NullInstance();
+        private SbeDouble _sessionHighPrice = SbeDouble.NullInstance();
+        private SbeDouble _sessionLowPrice = SbeDouble.NullInstance();
         private int _openInterest = 0;
         private int _clearedVolume = 0;
 
@@ -34,9 +34,9 @@ namespace Epam.CmeMdp3Handler.MktData
         {
             short openCloseSettlFlag = incrementEntry.GetUInt8(286);
             if (openCloseSettlFlag == FlagDailyOpenPrice)
-                _openingPrice.SetMantissa(incrementEntry.GetInt64(270));
+                incrementEntry.GetDouble(270, _openingPrice);
             else if (openCloseSettlFlag == FlagIndicativeOpeningPrice)
-                _indicativeOpeningPrice.SetMantissa(incrementEntry.GetInt64(270));
+                incrementEntry.GetDouble(270, _indicativeOpeningPrice);
         }
 
         public void UpdateSettlementPrice(IFieldSet incrementEntry)
@@ -46,12 +46,12 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void UpdateTradingSessionHighPrice(IFieldSet incrementEntry)
         {
-            _sessionHighPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionHighPrice);
         }
 
         public void UpdateTradingSessionLowPrice(IFieldSet incrementEntry)
         {
-            _sessionLowPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionLowPrice);
         }
 
         public void UpdateTradeVolume(IFieldSet incrementEntry)
@@ -66,17 +66,17 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void UpdateSessionHighBid(IFieldSet incrementEntry)
         {
-            _sessionHighBid.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionHighBid);
         }
 
         public void UpdateSessionLowOffer(IFieldSet incrementEntry)
         {
-            _sessionLowOffer.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionLowOffer);
         }
 
         public void UpdateFixingPrice(IFieldSet incrementEntry)
         {
-            _fixingPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _fixingPrice);
         }
 
         public void UpdateThresholdLimitsAndPriceBandVariation(IFieldSet incrementEntry)

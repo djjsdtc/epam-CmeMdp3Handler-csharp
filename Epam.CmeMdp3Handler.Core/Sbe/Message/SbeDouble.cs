@@ -7,6 +7,12 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
         private bool _isNull;
 
         public static SbeDouble Instance() => new SbeDouble();
+        public static SbeDouble NullInstance()
+        {
+            var instance = new SbeDouble();
+            instance.SetNull(true);
+            return instance;
+        }
 
         public void Reset()
         {
@@ -25,5 +31,6 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
         public void SetNull(bool isNull) { _isNull = isNull; }
 
         public double AsDouble() => _mantissa * System.Math.Pow(10, _exponent);
+        public double? AsNullableDouble() => _isNull ? null : AsDouble();
     }
 }
