@@ -51,14 +51,14 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void HandleSnapshotBidEntry(IMdpGroup snptGroup)
         {
-            byte level = snptGroup.GetInt8(1023);
+            byte level = (byte)snptGroup.GetInt8(1023);
             if (level > 1 && (!_subscribedToEntireBook || level > _depth)) return;
             ((OrderBookPriceEntry)GetBid(level)).RefreshBookFromMessage(snptGroup);
         }
 
         public void HandleSnapshotOfferEntry(IMdpGroup snptGroup)
         {
-            byte level = snptGroup.GetInt8(1023);
+            byte level = (byte)snptGroup.GetInt8(1023);
             if (level > 1 && (!_subscribedToEntireBook || level > _depth)) return;
             ((OrderBookPriceEntry)GetOffer(level)).RefreshBookFromMessage(snptGroup);
         }

@@ -31,7 +31,7 @@ namespace Epam.CmeMdp3Handler
 
         /// <summary>Gets the int8 value of the field as a byte.</summary>
         /// <param name="tagId">FIX tag ID of the field</param>
-        byte GetInt8(int tagId);
+        sbyte GetInt8(int tagId);
 
         /// <summary>Gets the int16 value of the field.</summary>
         /// <param name="tagId">FIX tag ID of the field</param>

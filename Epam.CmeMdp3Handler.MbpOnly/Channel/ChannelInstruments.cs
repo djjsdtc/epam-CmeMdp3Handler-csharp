@@ -190,7 +190,7 @@ namespace Epam.CmeMdp3Handler.Channel
                 _mdTypeGroup.Next();
                 _mdTypeGroup.GetString(SecMdFeedType, _secMdFeedType);
                 if (_secMdFeedType.GetCharAt(_secMdFeedType.GetLength() - 1) == 'X')
-                    return _mdTypeGroup.GetInt8(SecMarketDepth);
+                    return (byte)_mdTypeGroup.GetInt8(SecMarketDepth);
             }
             return SecDefaultMdDepth;
         }

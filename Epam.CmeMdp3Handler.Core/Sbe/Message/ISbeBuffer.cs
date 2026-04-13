@@ -23,7 +23,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
 
         char GetChar();
         short GetUInt8();
-        byte GetInt8();
+        sbyte GetInt8();
         short GetInt16();
         int GetUInt16();
         int GetInt32();

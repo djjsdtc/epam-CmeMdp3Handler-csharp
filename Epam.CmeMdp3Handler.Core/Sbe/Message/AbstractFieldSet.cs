@@ -49,14 +49,14 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
         private bool IsPrimitiveNull(SbeFieldType fieldType)
         {
             var pt = fieldType.PrimitiveType!;
-            if (pt == SbePrimitiveType.Char)   return fieldType.CharPresenceVal?[0] == Buffer().GetChar();
-            if (pt == SbePrimitiveType.Int8)   return fieldType.Int8PresenceVal == Buffer().GetInt8();
-            if (pt == SbePrimitiveType.UInt8)  return fieldType.UInt8PresenceVal == Buffer().GetUInt8();
-            if (pt == SbePrimitiveType.Int16)  return fieldType.UInt16PresenceVal == Buffer().GetInt16();
+            if (pt == SbePrimitiveType.Char) return fieldType.CharPresenceVal?[0] == Buffer().GetChar();
+            if (pt == SbePrimitiveType.Int8) return fieldType.Int8PresenceVal == Buffer().GetInt8();
+            if (pt == SbePrimitiveType.UInt8) return fieldType.UInt8PresenceVal == Buffer().GetUInt8();
+            if (pt == SbePrimitiveType.Int16) return fieldType.UInt16PresenceVal == Buffer().GetInt16();
             if (pt == SbePrimitiveType.UInt16) return fieldType.UInt16PresenceVal == Buffer().GetUInt16();
-            if (pt == SbePrimitiveType.Int32)  return fieldType.Int32PresenceVal == Buffer().GetInt32();
+            if (pt == SbePrimitiveType.Int32) return fieldType.Int32PresenceVal == Buffer().GetInt32();
             if (pt == SbePrimitiveType.UInt32) return fieldType.UInt32PresenceVal == Buffer().GetUInt32();
-            if (pt == SbePrimitiveType.Int64)  return fieldType.Int64PresenceVal == Buffer().GetInt64();
+            if (pt == SbePrimitiveType.Int64) return fieldType.Int64PresenceVal == Buffer().GetInt64();
             if (pt == SbePrimitiveType.UInt64) return Buffer().IsUInt64Null();
             throw new InvalidOperationException($"Unknown primitive type {pt}");
         }
@@ -83,7 +83,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
             Seek(f); return Buffer().GetUInt8();
         }
 
-        public byte GetInt8(int tagId)
+        public sbyte GetInt8(int tagId)
         {
             var f = Metadata().FindField(tagId)!;
             if (f.IsConstant) return f.Int8PresenceVal;

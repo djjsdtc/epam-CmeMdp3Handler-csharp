@@ -97,7 +97,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
 
         public short GetUInt8() => (short)(_data[_position] & 0xFF);
 
-        public byte GetInt8() => _data[_position];
+        public sbyte GetInt8() => _data[_position].ToSignedByte();
 
         public short GetInt16() => BinaryPrimitives.ReadInt16LittleEndian(_data.AsSpan(_position));
 
