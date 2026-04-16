@@ -13,8 +13,7 @@ namespace Epam.CmeMdp3Handler.MktData
         public void Clear()
         {
             qty = 0;
-            price.Reset();
-            price.SetNull(true);
+            price.Reset(true);
         }
 
         public void RefreshFromAnotherEntry(ImpliedBookPriceEntry bookEntry)
@@ -28,7 +27,7 @@ namespace Epam.CmeMdp3Handler.MktData
         public void RefreshFromMessage(IFieldSet fieldSet)
         {
             this.qty = fieldSet.GetInt32(271);
-            this.price.SetMantissa(fieldSet.GetInt64(270));
+            fieldSet.GetDouble(270, this.price);
         }
     }
 }

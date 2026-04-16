@@ -7,6 +7,7 @@
     {
         int GetSecurityId();
         int ElectronicVolume();
-        List<PublicTradeEntity> PublicTrades();
+        List<PublicTradeEntity> NewTrades();
+        List<PublicTradeEntity> AdjustTrades();
     }
 }

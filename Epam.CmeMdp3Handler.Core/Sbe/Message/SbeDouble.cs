@@ -14,11 +14,11 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
             return instance;
         }
 
-        public void Reset()
+        public void Reset(bool isNull = false)
         {
             _mantissa = 0;
             _exponent = 0;
-            _isNull = false;
+            _isNull = isNull;
         }
 
         public long GetMantissa() => _mantissa;

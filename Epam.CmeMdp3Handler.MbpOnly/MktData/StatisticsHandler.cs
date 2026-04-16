@@ -104,19 +104,19 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public override void Clear()
         {
-            _openingPrice.SetNull();
-            _fixingPrice.SetNull();
-            _indicativeOpeningPrice.SetNull();
-            _sessionHighBid.SetNull();
-            _sessionLowOffer.SetNull();
-            _sessionHighPrice.SetNull();
-            _sessionLowPrice.SetNull();
-            _settlementPrice.SetNull();
+            _openingPrice.Reset(true);
+            _fixingPrice.Reset(true);
+            _indicativeOpeningPrice.Reset(true);
+            _sessionHighBid.Reset(true);
+            _sessionLowOffer.Reset(true);
+            _sessionHighPrice.Reset(true);
+            _sessionLowPrice.Reset(true);
+            _settlementPrice.Reset(true);
             _openInterest = 0;
             _clearedVolume = 0;
-            _highLimitPrice.SetNull();
-            _lowLimitPrice.SetNull();
-            _maxPriceVariation.SetNull();
+            _highLimitPrice.Reset(true);
+            _lowLimitPrice.Reset(true);
+            _maxPriceVariation.Reset(true);
             refreshed = false;
         }
 
@@ -126,30 +126,30 @@ namespace Epam.CmeMdp3Handler.MktData
             refreshed = false;
         }
 
-        public double? OpeningPrice() => _openingPrice;
+        public double? OpeningPrice() => _openingPrice.AsNullableDouble();
 
-        public double? SettlementPrice() => _settlementPrice;
+        public double? SettlementPrice() => _settlementPrice.AsNullableDouble();
 
-        public double? TradingSessionHighPrice() => _sessionHighPrice;
+        public double? TradingSessionHighPrice() => _sessionHighPrice.AsNullableDouble();
 
-        public double? TradingSessionLowPrice() => _sessionLowPrice;
+        public double? TradingSessionLowPrice() => _sessionLowPrice.AsNullableDouble();
 
-        public double? FixingPrice() => _fixingPrice;
+        public double? FixingPrice() => _fixingPrice.AsNullableDouble();
 
-        public double? IndicativeOpeningPrice() => _indicativeOpeningPrice;
+        public double? IndicativeOpeningPrice() => _indicativeOpeningPrice.AsNullableDouble();
 
-        public double? SessionHighBid() => _sessionHighBid;
+        public double? SessionHighBid() => _sessionHighBid.AsNullableDouble();
 
-        public double? SessionLowOffer() => _sessionLowOffer;
+        public double? SessionLowOffer() => _sessionLowOffer.AsNullableDouble();
 
         public int OpenInterest() => _openInterest;
 
         public int TradeVolume() => _clearedVolume;
 
-        public double? HighLimitPrice() => _highLimitPrice;
+        public double? HighLimitPrice() => _highLimitPrice.AsNullableDouble();
 
-        public double? LowLimitPrice() => _lowLimitPrice;
+        public double? LowLimitPrice() => _lowLimitPrice.AsNullableDouble();
 
-        public double? MaxPriceVariation() => _maxPriceVariation;
+        public double? MaxPriceVariation() => _maxPriceVariation.AsNullableDouble();
     }
 }

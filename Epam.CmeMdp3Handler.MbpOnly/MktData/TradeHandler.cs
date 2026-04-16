@@ -9,7 +9,8 @@ namespace Epam.CmeMdp3Handler.MktData
     public class TradeHandler : AbstractMktDataHandler, IPublicTrades
     {
         private int _electronicVolume;
-        private List<PublicTradeEntity> _publicTrades = new List<PublicTradeEntity>();
+        private List<PublicTradeEntity> _newTrades = new List<PublicTradeEntity>();
+        private List<PublicTradeEntity> _adjustTrades = new List<PublicTradeEntity>();
 
         private bool refreshed = false;
 
@@ -22,7 +23,10 @@ namespace Epam.CmeMdp3Handler.MktData
         {
             var publicTradeEntity = new PublicTradeEntity();
             publicTradeEntity.RefreshBookFromMessage(tradeEntry);
-            _publicTrades.Add(publicTradeEntity);
+            if (publicTradeEntity.GetAction() == MDUpdateAction.New)
+                _newTrades.Add(publicTradeEntity);
+            else if (publicTradeEntity.GetAction() == MDUpdateAction.Change || publicTradeEntity.GetAction() == MDUpdateAction.Delete)
+                _adjustTrades.Add(publicTradeEntity);
             refreshed = true;
         }
 
@@ -35,17 +39,25 @@ namespace Epam.CmeMdp3Handler.MktData
         public override void Clear()
         {
             _electronicVolume = 0;
-            _publicTrades = new List<PublicTradeEntity>();
+            _newTrades = new List<PublicTradeEntity>();
+            _adjustTrades = new List<PublicTradeEntity>();
             refreshed = false;
         }
 
         public int ElectronicVolume() => _electronicVolume;
 
-        public List<PublicTradeEntity> PublicTrades()
+        public List<PublicTradeEntity> NewTrades()
         {
-            var publicTrades = _publicTrades;
-            _publicTrades = new List<PublicTradeEntity>();
-            return publicTrades;
+            var newTrades = _newTrades;
+            _newTrades = new List<PublicTradeEntity>();
+            return newTrades;
+        }
+
+        public List<PublicTradeEntity> AdjustTrades()
+        {
+            var adjustTrades = _adjustTrades;
+            _adjustTrades = new List<PublicTradeEntity>();
+            return adjustTrades;
         }
 
         public void CommitEvent()
