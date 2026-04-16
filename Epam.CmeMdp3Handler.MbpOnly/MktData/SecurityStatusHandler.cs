@@ -27,7 +27,7 @@ namespace Epam.CmeMdp3Handler.MktData
                 int tradeDate = statusMessage.GetUInt16(75);
                 SecurityTradingStatus? secTrdStatus = SecurityTradingStatusExtensions.FromFIX(statusMessage.GetUInt8(326));
                 HaltReason? haltReason = HaltReasonExtensions.FromFIX(statusMessage.GetUInt8(327));
-                SecurityTradingEvent secTrdEvent = SecurityTradingEventExtensions.FromFIX(statusMessage.GetInt8(1174));
+                SecurityTradingEvent secTrdEvent = SecurityTradingEventExtensions.FromFIX((byte)statusMessage.GetInt8(1174));
 
                 _channelContext.NotifySecurityStatus(_secGroup, _secAsset, securityId, tradeDate,
                     matchEventIndicator, secTrdStatus, haltReason, secTrdEvent);

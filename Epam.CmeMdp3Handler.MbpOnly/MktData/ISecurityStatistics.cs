@@ -3,18 +3,18 @@ namespace Epam.CmeMdp3Handler.MktData
     public interface ISecurityStatistics
     {
         int GetSecurityId();
-        Price FixingPrice();
-        Price IndicativeOpeningPrice();
-        Price OpeningPrice();
+        double? FixingPrice();
+        double? IndicativeOpeningPrice();
+        double? OpeningPrice();
         int OpenInterest();
-        Price SessionHighBid();
-        Price SessionLowOffer();
-        Price SettlementPrice();
+        double? SessionHighBid();
+        double? SessionLowOffer();
+        double? SettlementPrice();
         int TradeVolume();
-        Price TradingSessionHighPrice();
-        Price TradingSessionLowPrice();
-        Price HighLimitPrice();
-        Price LowLimitPrice();
-        Price MaxPriceVariation();
+        double? TradingSessionHighPrice();
+        double? TradingSessionLowPrice();
+        double? HighLimitPrice();
+        double? LowLimitPrice();
+        double? MaxPriceVariation();
     }
 }

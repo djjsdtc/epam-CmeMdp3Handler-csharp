@@ -10,30 +10,30 @@ namespace Epam.CmeMdp3Handler.Sbe.Message.Meta
     {
         private const string PRESENCE_OPTIONAL = "optional";
         private const string PRESENCE_CONSTANT = "constant";
-        private const string FLOAT_MANTISSA    = "mantissa";
-        private const string FLOAT_EXPONENT    = "exponent";
+        private const string FLOAT_MANTISSA = "mantissa";
+        private const string FLOAT_EXPONENT = "exponent";
 
         private readonly FieldType _fieldType;
         private readonly IMetadataContainer _metadataContainer;
 
         public SbePrimitiveType? PrimitiveType { get; private set; }
         public bool IsComposite { get; private set; }
-        public bool IsConstant  { get; private set; }
-        public bool IsOptional  { get; private set; }
-        public bool IsString    { get; private set; }
-        public int  Length      { get; private set; }
-        public bool IsFloat     { get; private set; }
-        public byte ExponentVal { get; private set; }
+        public bool IsConstant { get; private set; }
+        public bool IsOptional { get; private set; }
+        public bool IsString { get; private set; }
+        public int Length { get; private set; }
+        public bool IsFloat { get; private set; }
+        public sbyte ExponentVal { get; private set; }
 
-        public string? CharPresenceVal  { get; private set; }
-        public byte    Int8PresenceVal  { get; private set; }
-        public short   UInt8PresenceVal { get; private set; }
-        public short   Int16PresenceVal { get; private set; }
-        public int     UInt16PresenceVal{ get; private set; }
-        public int     Int32PresenceVal { get; private set; }
-        public long    UInt32PresenceVal{ get; private set; }
-        public long    Int64PresenceVal { get; private set; }
-        public long    UInt64PresenceVal{ get; private set; }
+        public string? CharPresenceVal { get; private set; }
+        public sbyte Int8PresenceVal { get; private set; }
+        public short UInt8PresenceVal { get; private set; }
+        public short Int16PresenceVal { get; private set; }
+        public int UInt16PresenceVal { get; private set; }
+        public int Int32PresenceVal { get; private set; }
+        public long UInt32PresenceVal { get; private set; }
+        public long Int64PresenceVal { get; private set; }
+        public long UInt64PresenceVal { get; private set; }
 
         public FieldType GetFieldType() => _fieldType;
 
@@ -127,7 +127,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Message.Meta
                         IsOptional = true;
                         Int64PresenceVal = long.Parse(type1.NullValue);
                     }
-                    ExponentVal = byte.Parse(type2.Value ?? "0");
+                    ExponentVal = sbyte.Parse(type2.Value ?? "0");
                 }
             }
         }
@@ -153,14 +153,14 @@ namespace Epam.CmeMdp3Handler.Sbe.Message.Meta
         {
             switch (PrimitiveType!.Name)
             {
-                case "char":   CharPresenceVal   = val; break;
-                case "int8":   Int8PresenceVal   = byte.Parse(val); break;
-                case "uint8":  UInt8PresenceVal  = short.Parse(val); break;
-                case "int16":  Int16PresenceVal  = short.Parse(val); break;
+                case "char": CharPresenceVal = val; break;
+                case "int8": Int8PresenceVal = sbyte.Parse(val); break;
+                case "uint8": UInt8PresenceVal = short.Parse(val); break;
+                case "int16": Int16PresenceVal = short.Parse(val); break;
                 case "uint16": UInt16PresenceVal = int.Parse(val); break;
-                case "int32":  Int32PresenceVal  = int.Parse(val); break;
+                case "int32": Int32PresenceVal = int.Parse(val); break;
                 case "uint32": UInt32PresenceVal = long.Parse(val); break;
-                case "int64":  Int64PresenceVal  = long.Parse(val); break;
+                case "int64": Int64PresenceVal = long.Parse(val); break;
                 case "uint64": UInt64PresenceVal = unchecked((long)ulong.Parse(val)); break;
                 default: throw new InvalidOperationException($"Unknown type {PrimitiveType.Name}");
             }

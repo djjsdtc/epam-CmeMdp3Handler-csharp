@@ -17,7 +17,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Schema.Vo
         [XmlAttribute("nullValue")]
         public string? NullValue { get; set; }
 
-        [XmlAttribute("value")]
+        [XmlText]
         public string? Value { get; set; }
 
         [XmlAttribute("length")]

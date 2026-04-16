@@ -48,8 +48,8 @@ namespace Epam.CmeMdp3Handler.Core.Channel
 
         private MdpFeedRtmState GetState() => (MdpFeedRtmState)_feedState;
 
-        public bool IsActive()      => GetState() == MdpFeedRtmState.ACTIVE;
-        public bool IsShutdown()    => GetState() is MdpFeedRtmState.PENDING_SHUTDOWN or MdpFeedRtmState.SHUTDOWN;
+        public bool IsActive() => GetState() == MdpFeedRtmState.ACTIVE;
+        public bool IsShutdown() => GetState() is MdpFeedRtmState.PENDING_SHUTDOWN or MdpFeedRtmState.SHUTDOWN;
         public bool IsActiveAndNotShutdown() => IsActive(); // review this later
 
         public bool CancelShutdownIfStarted() => TrySetState(MdpFeedRtmState.PENDING_SHUTDOWN, MdpFeedRtmState.ACTIVE);
@@ -80,7 +80,7 @@ namespace Epam.CmeMdp3Handler.Core.Channel
 
             NotifyStarted();
 
-            var buf    = new byte[SbeConstants.MDP_PACKET_MAX_SIZE];
+            var buf = new byte[SbeConstants.MDP_PACKET_MAX_SIZE];
             var packet = MdpPacket.Instance();
 
             // work while any thread really started shutdown
@@ -137,8 +137,7 @@ namespace Epam.CmeMdp3Handler.Core.Channel
         private void ReceiveAndNotify(byte[] buf, MdpPacket packet)
         {
             if (_socket == null) return;
-            EndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-            int received = _socket.ReceiveFrom(buf, ref ep);
+            int received = _socket.Receive(buf);
             if (received > 0)
             {
                 packet.Buffer().WrapForParse(buf, received);

@@ -9,19 +9,19 @@ namespace Epam.CmeMdp3Handler.MktData
         private const short FlagDailyOpenPrice = 0;
         private const short FlagIndicativeOpeningPrice = 5;
 
-        private readonly Price _openingPrice = new Price();
-        private readonly Price _fixingPrice = new Price();
-        private readonly Price _indicativeOpeningPrice = new Price();
-        private readonly Price _sessionHighBid = new Price();
-        private readonly Price _sessionLowOffer = new Price();
-        private readonly Price _sessionHighPrice = new Price();
-        private readonly Price _sessionLowPrice = new Price();
-        private readonly Price _settlementPrice = new Price();
+        private readonly SbeDouble _openingPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _fixingPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _indicativeOpeningPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionHighBid = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionLowOffer = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionHighPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _sessionLowPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _settlementPrice = SbeDouble.NullInstance();
         private int _openInterest = 0;
         private int _clearedVolume = 0;
-        private readonly Price _highLimitPrice = new Price();
-        private readonly Price _lowLimitPrice = new Price();
-        private readonly Price _maxPriceVariation = new Price();
+        private readonly SbeDouble _highLimitPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _lowLimitPrice = SbeDouble.NullInstance();
+        private readonly SbeDouble _maxPriceVariation = SbeDouble.NullInstance();
 
         private bool refreshed = false;
 
@@ -40,9 +40,9 @@ namespace Epam.CmeMdp3Handler.MktData
         {
             short openCloseSettlFlag = incrementEntry.GetUInt8(286);
             if (openCloseSettlFlag == FlagDailyOpenPrice)
-                _openingPrice.SetMantissa(incrementEntry.GetInt64(270));
+                incrementEntry.GetDouble(270, _openingPrice);
             else if (openCloseSettlFlag == FlagIndicativeOpeningPrice)
-                _indicativeOpeningPrice.SetMantissa(incrementEntry.GetInt64(270));
+                incrementEntry.GetDouble(270, _indicativeOpeningPrice);
             refreshed = true;
         }
 
@@ -54,13 +54,13 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void UpdateTradingSessionHighPrice(IFieldSet incrementEntry)
         {
-            _sessionHighPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionHighPrice);
             refreshed = true;
         }
 
         public void UpdateTradingSessionLowPrice(IFieldSet incrementEntry)
         {
-            _sessionLowPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionLowPrice);
             refreshed = true;
         }
 
@@ -78,19 +78,19 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void UpdateSessionHighBid(IFieldSet incrementEntry)
         {
-            _sessionHighBid.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionHighBid);
             refreshed = true;
         }
 
         public void UpdateSessionLowOffer(IFieldSet incrementEntry)
         {
-            _sessionLowOffer.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _sessionLowOffer);
             refreshed = true;
         }
 
         public void UpdateFixingPrice(IFieldSet incrementEntry)
         {
-            _fixingPrice.SetMantissa(incrementEntry.GetInt64(270));
+            incrementEntry.GetDouble(270, _fixingPrice);
             refreshed = true;
         }
 
@@ -126,30 +126,30 @@ namespace Epam.CmeMdp3Handler.MktData
             refreshed = false;
         }
 
-        public Price OpeningPrice() => _openingPrice;
+        public double? OpeningPrice() => _openingPrice;
 
-        public Price SettlementPrice() => _settlementPrice;
+        public double? SettlementPrice() => _settlementPrice;
 
-        public Price TradingSessionHighPrice() => _sessionHighPrice;
+        public double? TradingSessionHighPrice() => _sessionHighPrice;
 
-        public Price TradingSessionLowPrice() => _sessionLowPrice;
+        public double? TradingSessionLowPrice() => _sessionLowPrice;
 
-        public Price FixingPrice() => _fixingPrice;
+        public double? FixingPrice() => _fixingPrice;
 
-        public Price IndicativeOpeningPrice() => _indicativeOpeningPrice;
+        public double? IndicativeOpeningPrice() => _indicativeOpeningPrice;
 
-        public Price SessionHighBid() => _sessionHighBid;
+        public double? SessionHighBid() => _sessionHighBid;
 
-        public Price SessionLowOffer() => _sessionLowOffer;
+        public double? SessionLowOffer() => _sessionLowOffer;
 
         public int OpenInterest() => _openInterest;
 
         public int TradeVolume() => _clearedVolume;
 
-        public Price HighLimitPrice() => _highLimitPrice;
+        public double? HighLimitPrice() => _highLimitPrice;
 
-        public Price LowLimitPrice() => _lowLimitPrice;
+        public double? LowLimitPrice() => _lowLimitPrice;
 
-        public Price MaxPriceVariation() => _maxPriceVariation;
+        public double? MaxPriceVariation() => _maxPriceVariation;
     }
 }
