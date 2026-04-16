@@ -12,7 +12,7 @@ namespace Epam.CmeMdp3Handler.MktData
         private List<PublicTradeEntity> _newTrades = new List<PublicTradeEntity>();
         private List<PublicTradeEntity> _adjustTrades = new List<PublicTradeEntity>();
 
-        private bool refreshed = false;
+        private bool _refreshed = false;
 
         public TradeHandler(ChannelContext channelContext, int securityId, int subscriptionFlags)
             : base(channelContext, securityId, subscriptionFlags)
@@ -27,13 +27,13 @@ namespace Epam.CmeMdp3Handler.MktData
                 _newTrades.Add(publicTradeEntity);
             else if (publicTradeEntity.GetAction() == MDUpdateAction.Change || publicTradeEntity.GetAction() == MDUpdateAction.Delete)
                 _adjustTrades.Add(publicTradeEntity);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateElectronicVolume(IFieldSet incrementEntry)
         {
             _electronicVolume = incrementEntry.GetInt32(271);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public override void Clear()
@@ -41,7 +41,7 @@ namespace Epam.CmeMdp3Handler.MktData
             _electronicVolume = 0;
             _newTrades = new List<PublicTradeEntity>();
             _adjustTrades = new List<PublicTradeEntity>();
-            refreshed = false;
+            _refreshed = false;
         }
 
         public int ElectronicVolume() => _electronicVolume;
@@ -62,8 +62,10 @@ namespace Epam.CmeMdp3Handler.MktData
 
         public void CommitEvent()
         {
-            if (refreshed) channelContext.NotifyTradeSummary(this);
-            refreshed = false;
+            if (_refreshed) channelContext.NotifyTradeSummary(this);
+            _refreshed = false;
         }
+
+        public bool IsRefreshed() => _refreshed;
     }
 }

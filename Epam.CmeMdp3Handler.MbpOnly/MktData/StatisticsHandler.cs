@@ -23,7 +23,7 @@ namespace Epam.CmeMdp3Handler.MktData
         private readonly SbeDouble _lowLimitPrice = SbeDouble.NullInstance();
         private readonly SbeDouble _maxPriceVariation = SbeDouble.NullInstance();
 
-        private bool refreshed = false;
+        private bool _refreshed = false;
 
         public StatisticsHandler(ChannelContext channelContext, int securityId, int subscriptionFlags)
             : base(channelContext, securityId, subscriptionFlags)
@@ -43,63 +43,63 @@ namespace Epam.CmeMdp3Handler.MktData
                 incrementEntry.GetDouble(270, _openingPrice);
             else if (openCloseSettlFlag == FlagIndicativeOpeningPrice)
                 incrementEntry.GetDouble(270, _indicativeOpeningPrice);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateSettlementPrice(IFieldSet incrementEntry)
         {
-            _settlementPrice.SetMantissa(incrementEntry.GetInt64(270));
-            refreshed = true;
+            incrementEntry.GetDouble(270, _settlementPrice);
+            _refreshed = true;
         }
 
         public void UpdateTradingSessionHighPrice(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _sessionHighPrice);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateTradingSessionLowPrice(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _sessionLowPrice);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateTradeVolume(IFieldSet incrementEntry)
         {
             _clearedVolume = incrementEntry.GetInt32(271);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateOpenInterest(IFieldSet incrementEntry)
         {
             _openInterest = incrementEntry.GetInt32(271);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateSessionHighBid(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _sessionHighBid);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateSessionLowOffer(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _sessionLowOffer);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateFixingPrice(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _fixingPrice);
-            refreshed = true;
+            _refreshed = true;
         }
 
         public void UpdateThresholdLimitsAndPriceBandVariation(IFieldSet incrementEntry)
         {
-            _highLimitPrice.SetMantissa(incrementEntry.GetInt64(1149));
-            _lowLimitPrice.SetMantissa(incrementEntry.GetInt64(1148));
-            _maxPriceVariation.SetMantissa(incrementEntry.GetInt64(1143));
-            refreshed = true;
+            incrementEntry.GetDouble(1149, _highLimitPrice);
+            incrementEntry.GetDouble(1148, _lowLimitPrice);
+            incrementEntry.GetDouble(1143, _maxPriceVariation);
+            _refreshed = true;
         }
 
         public override void Clear()
@@ -117,13 +117,13 @@ namespace Epam.CmeMdp3Handler.MktData
             _highLimitPrice.Reset(true);
             _lowLimitPrice.Reset(true);
             _maxPriceVariation.Reset(true);
-            refreshed = false;
+            _refreshed = false;
         }
 
         public void CommitEvent()
         {
-            if (refreshed) channelContext.NotifySecurityStatistics(this);
-            refreshed = false;
+            if (_refreshed) channelContext.NotifySecurityStatistics(this);
+            _refreshed = false;
         }
 
         public double? OpeningPrice() => _openingPrice.AsNullableDouble();
@@ -151,5 +151,7 @@ namespace Epam.CmeMdp3Handler.MktData
         public double? LowLimitPrice() => _lowLimitPrice.AsNullableDouble();
 
         public double? MaxPriceVariation() => _maxPriceVariation.AsNullableDouble();
+
+        public bool IsRefreshed() => _refreshed;
     }
 }

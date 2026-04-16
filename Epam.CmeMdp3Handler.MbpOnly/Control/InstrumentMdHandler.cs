@@ -139,7 +139,8 @@ namespace Epam.CmeMdp3Handler.Control
                         _multipleDepthBookHandler?.HandleSnapshotOfferEntry(mdpGroupObj);
                         break;
                     case MDEntryType.Trade:
-                        _tradeHandler?.UpdateTradeSummary(mdpGroupObj);
+                        // Only last trade price, should not process as trade.
+                        //_tradeHandler?.UpdateTradeSummary(mdpGroupObj);
                         break;
                     case MDEntryType.OpeningPrice:
                         _statisticsHandler?.UpdateOpeningPrice(mdpGroupObj);
@@ -189,9 +190,9 @@ namespace Epam.CmeMdp3Handler.Control
                 _channelContext.NotifyBookFullRefresh(_multipleDepthBookHandler);
             if (_impliedBookHandler != null)
                 _channelContext.NotifyImpliedBookFullRefresh(_impliedBookHandler);
-            if (_statisticsHandler != null)
+            if (_statisticsHandler != null && _statisticsHandler.IsRefreshed())
                 _channelContext.NotifySecurityStatistics(_statisticsHandler);
-            if (_tradeHandler != null)
+            if (_tradeHandler != null && _tradeHandler.IsRefreshed())
                 _channelContext.NotifyTradeSummary(_tradeHandler);
         }
 
