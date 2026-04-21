@@ -219,3 +219,181 @@ Two sample programs from the Java README are included in `Epam.CmeMdp3Handler.Sa
 
 Both samples require real `config.xml` and `templates_FixBinary.xml` files from the CME
 certification or production environment, referenced via file URIs.
+
+---
+
+## 20. New Module: Epam.CmeMdp3Handler.MbpWithMbo
+
+The Java `mbp-with-mbo` module has been converted to a new C# project
+`Epam.CmeMdp3Handler.MbpWithMbo`. The following sections describe the differences
+introduced in this module.
+
+---
+
+## 21. Project Structure (mbp-with-mbo)
+
+| Java | C# |
+|------|----|
+| `com.epam.cme.mdp3` (top-level module classes) | `Epam.CmeMdp3Handler.MbpWithMbo` |
+| `com.epam.cme.mdp3.control` | `Epam.CmeMdp3Handler.MbpWithMbo.Control` |
+| `com.epam.cme.mdp3.core.channel.tcp` | `Epam.CmeMdp3Handler.Core.Channel.Tcp` (added to Core project) |
+| Gradle sub-project `mbp-with-mbo` | MSBuild project `Epam.CmeMdp3Handler.MbpWithMbo.csproj` |
+
+The TCP channel classes (`MdpTCPMessageRequester`, `MdpTCPChannel`, `ITCPMessageRequester`,
+`ITCPPacketListener`, `ITCPChannel`) existed in the Java `core` module but were missing
+from the initial C# conversion. They have been added to `Epam.CmeMdp3Handler.Core` under
+`Channel/Tcp/`.
+
+Namespace additions to `JAVA_TO_CSHARP_DIFFERENCES.md` section 15:
+
+| Java package | C# namespace |
+|---|---|
+| `com.epam.cme.mdp3` (mbp-with-mbo root) | `Epam.CmeMdp3Handler.MbpWithMbo` |
+| `com.epam.cme.mdp3.control` (mbp-with-mbo) | `Epam.CmeMdp3Handler.MbpWithMbo.Control` |
+| `com.epam.cme.mdp3.core.channel.tcp` | `Epam.CmeMdp3Handler.Core.Channel.Tcp` |
+
+---
+
+## 22. Off-Heap Chronicle Bytes LongArray → Managed long[]
+
+**Java** `OffHeapSnapshotCycleHandler` uses `net.openhft.chronicle.bytes.NativeBytesStore`
+and Chronicle Bytes `LongArray` (allocated off-heap) to store per-security chunk tracking
+arrays. The `Long2ObjectHashMap` from agrona is used as the container.
+
+**C#** uses a plain managed `long[]` array wrapped in a private sealed inner class
+`MutableLongToLongArrayPair` which replaces Java's generic `MutableLongToObjPair<LongArray>`.
+`Dictionary<long, MutableLongToLongArrayPair>` replaces `Long2ObjectHashMap`. No off-heap
+allocation is performed — the arrays are GC-managed. The behavior is functionally equivalent.
+
+---
+
+## 23. agrona IntHashSet → HashSet\<int\>
+
+**Java** `ChannelControllerRouter` uses `org.agrona.collections.IntHashSet` (a
+primitive-specialised set that avoids boxing) to track security IDs within a single packet.
+
+**C#** uses `HashSet<int>`. Modern .NET's `HashSet<int>` has no boxing overhead for
+value types; the functional and performance characteristics are equivalent.
+
+---
+
+## 24. Apache Commons MutablePair → ValueTuple
+
+**Java** `LowLevelMdpChannel` uses `org.apache.commons.lang3.tuple.MutablePair<MdpFeedWorker, Thread>`
+to associate each feed worker with its thread in the `_feeds` map.
+
+**C#** uses `ValueTuple<MdpFeedWorker, Thread?>` stored in
+`Dictionary<string, (MdpFeedWorker Worker, Thread? Thread)>`. The immutability concern is
+addressed by replacing the pair entirely rather than mutating individual fields.
+
+---
+
+## 25. Java Consumer\<MdpMessage\> → Action\<IMdpMessage\>
+
+**Java** `ChannelControllerRouter` accepts a `List<Consumer<MdpMessage>> emptyBookConsumers`
+for empty-book notifications, following the Java `@FunctionalInterface` pattern.
+
+**C#** uses `IList<Action<IMdpMessage>>`. The `LowLevelMdpChannel` passes
+`_channelController.Accept` as a method-group delegate. `Action<T>` is the standard
+.NET equivalent of Java's `Consumer<T>`.
+
+---
+
+## 26. Java Runnable (TCP Recovery) → ThreadPool.QueueUserWorkItem
+
+**Java** `GapChannelController` submits TCP recovery work using
+`_scheduledExecutorService.execute(tcpRecoveryProcessor)` where `TcpRecoveryProcessor`
+implements `Runnable`.
+
+**C#** uses `ThreadPool.QueueUserWorkItem(_ => _tcpRecoveryProcessor.Run())`. The
+`ScheduledExecutorService` parameter was removed from the `GapChannelController`
+constructor — the thread-pool submission is self-contained.
+
+---
+
+## 27. Java synchronized Method → lock Statement
+
+**Java** `MdpTCPMessageRequester.askForLostMessages(...)` is declared `synchronized`,
+giving it an implicit per-instance monitor lock.
+
+**C#** `MdpTcpMessageRequester.AskForLostMessages(...)` uses an explicit
+`private readonly object _lock = new object()` field and wraps the method body in
+`lock (_lock) { }`. The behaviour is identical.
+
+---
+
+## 28. Java NIO SocketChannel → TcpClient / NetworkStream
+
+**Java** `MdpTCPChannel` uses `java.nio.channels.SocketChannel` in blocking mode for
+TCP replay feed connectivity.
+
+**C#** `MdpTcpChannel` uses `System.Net.Sockets.TcpClient` with `NetworkStream` for
+reads and writes. The `Connect()` / `Disconnect()` / `Send()` / `Receive()` contract of
+`ITcpChannel` is identical to the Java `ITCPChannel` interface.
+
+---
+
+## 29. @Deprecated → [Obsolete]
+
+**Java** `HeapSnapshotCycleHandler` is annotated `@Deprecated` (replaced by
+`OffHeapSnapshotCycleHandler`).
+
+**C#** `HeapSnapshotCycleHandler` is annotated `[Obsolete("Use OffHeapSnapshotCycleHandler instead.")]`,
+the idiomatic .NET equivalent.
+
+---
+
+## 30. IMdpChannelController Default Methods
+
+**Java** `MdpChannelController` is an `interface` with `default` method implementations
+(`updateSemanticMsgType`, `isIncrementalMessageSupported`, `isIncrementOnlyForMbo`,
+`isMboSnapshot`).
+
+**C#** `IMdpChannelController` uses **C# 8 default interface methods** (DIM) for the same
+four helpers. Unlike `VoidChannelListener` (section 6 above), these helpers have no state
+and are small predicates — DIM are appropriate here. Concrete call sites use the explicit
+interface cast `((IMdpChannelController)this).MethodName(...)` because the methods are
+defined on the interface, not the class.
+
+---
+
+## 31. Sentinel Value Writing (MdpOffHeapBuffer)
+
+**Java** `MDPOffHeapBuffer` writes `Integer.MAX_VALUE` as a sentinel sequence number
+directly into a `NativeBytesStore` using `bytesStore.writeInt(offset, Integer.MAX_VALUE)`.
+
+**C#** `MdpOffHeapBuffer` writes the sentinel via:
+```csharp
+BinaryPrimitives.WriteUInt32LittleEndian(
+    sentinel.AsSpan(SbeConstants.MESSAGE_SEQ_NUM_OFFSET),
+    (uint)UndefinedValue   // int.MaxValue cast to uint
+);
+```
+and wraps the buffer with `MdpPacket.WrapForParse`. The value and byte-order are identical.
+
+---
+
+## 32. DecimalFormat → string.Format("F3")
+
+**Java** `LowLevelMdpChannel.IncrementalStatistics` uses `java.text.DecimalFormat("#.###")`
+to format the average gap rate.
+
+**C#** uses `string.Format("{0:F3}", value)` (or `$"{value:F3}"`) for the same three-decimal
+fixed-point formatting.
+
+---
+
+## 33. Sample Programs (mbp-with-mbo)
+
+Two additional sample programs have been added to `Epam.CmeMdp3Handler.Samples` for the
+mbp-with-mbo module:
+
+| File | Description |
+|------|-------------|
+| `Sample3_MboLowLevelListener.cs` | Full MBO+MBP low-level listener for Channel 311 (README Sample 1 re-implemented for mbp-with-mbo API) |
+| `Sample4_MboPrintAllSecurities.cs` | Prints all security definitions for Channel 311 using the mbp-with-mbo module (README Sample 2 re-implemented) |
+
+The Java README Sample 1 shows an `onIncrementalMBORefresh` callback with a
+`matchEventIndicator` parameter that does not match the actual Java interface definition.
+The C# `Sample3` follows the actual `IChannelListener` interface signature (no
+`matchEventIndicator` parameter).

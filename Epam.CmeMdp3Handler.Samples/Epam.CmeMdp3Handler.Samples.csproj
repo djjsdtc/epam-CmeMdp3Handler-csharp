@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Epam.CmeMdp3Handler.Core\Epam.CmeMdp3Handler.Core.csproj" />
     <ProjectReference Include="..\Epam.CmeMdp3Handler.MbpOnly\Epam.CmeMdp3Handler.MbpOnly.csproj" />
+    <ProjectReference Include="..\Epam.CmeMdp3Handler.MbpWithMbo\Epam.CmeMdp3Handler.MbpWithMbo.csproj" />
   </ItemGroup>
 
 </Project>

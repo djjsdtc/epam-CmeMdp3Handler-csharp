@@ -49,3 +49,7 @@ Website: http://stevenwarwick.com
 This port code does not have support. Use it at your own risk.
 
 The original Java Handler's support information can be found in the original repository.
+
+## Important Notice About MBP with MBO Implementation
+
+The implementation code for MBP-Only is verified by CME AutoCert+, but the MBP-with-MBO implementation code is not verified by any testing system. The MBP-with-MBO implementation is only checked by the given sample program.
