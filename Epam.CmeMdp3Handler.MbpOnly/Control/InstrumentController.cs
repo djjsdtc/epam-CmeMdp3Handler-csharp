@@ -130,7 +130,7 @@ namespace Epam.CmeMdp3Handler.Control
         private void SwitchState(InstrumentState prevState, InstrumentState newState)
         {
             _state = newState;
-            if (newState == InstrumentState.OUTOFSYNC)
+            if (newState == InstrumentState.OUTOFSYNC || newState == InstrumentState.INITIAL)
                 _channelContext.SubscribeToSnapshotsForInstrument(_securityId);
             else if (newState == InstrumentState.SYNC || newState == InstrumentState.DISCONTINUED)
                 _channelContext.UnsubscribeToSnapshotsForInstrument(_securityId);

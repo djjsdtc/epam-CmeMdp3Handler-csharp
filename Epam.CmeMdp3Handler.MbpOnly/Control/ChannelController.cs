@@ -180,11 +180,6 @@ namespace Epam.CmeMdp3Handler.Control
         private void HandleSnapshotMessageInternal(MdpFeedContext feedContext, long snptPktSeqNum, IMdpMessage mdpMessage)
         {
             long lastMsgSeqNumProcessed = mdpMessage.GetUInt32(LastMsgSeqNumProcessed);
-            if (snptPktSeqNum == 1 && CanStopSnapshotListening(_snptMsgCountDown))
-            {
-                StopSnapshotListening(feedContext);
-                return;
-            }
             HandleSnapshotMessage(feedContext, mdpMessage);
             if (_snptMsgCountDown == PrcdSnptCountNull)
             {
@@ -193,6 +188,10 @@ namespace Epam.CmeMdp3Handler.Control
             }
             _snptMsgCountDown--;
             _lastMsgSeqNumPrcd369 = lastMsgSeqNumProcessed;
+            if (snptPktSeqNum == 1 && CanStopSnapshotListening(_snptMsgCountDown))
+            {
+                StopSnapshotListening(feedContext);
+            }
         }
 
         public void HandleSnapshotPacket(MdpFeedContext feedContext, MdpPacket mdpPacket)

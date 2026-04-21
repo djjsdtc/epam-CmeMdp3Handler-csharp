@@ -309,7 +309,7 @@ namespace Epam.CmeMdp3Handler.Channel
             {
                 Instruments.ResetCycleCounter();
                 StartInstrumentFeedA();
-                StartIncrementalFeedB();
+                StartInstrumentFeedB();
             }
             catch (Exception e)
             {
