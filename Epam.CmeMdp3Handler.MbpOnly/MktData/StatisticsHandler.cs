@@ -17,6 +17,7 @@ namespace Epam.CmeMdp3Handler.MktData
         private readonly SbeDouble _sessionHighPrice = SbeDouble.NullInstance();
         private readonly SbeDouble _sessionLowPrice = SbeDouble.NullInstance();
         private readonly SbeDouble _settlementPrice = SbeDouble.NullInstance();
+        private SettlPriceType? _settlPriceType;
         private int _openInterest = 0;
         private int _clearedVolume = 0;
         private readonly SbeDouble _highLimitPrice = SbeDouble.NullInstance();
@@ -49,6 +50,7 @@ namespace Epam.CmeMdp3Handler.MktData
         public void UpdateSettlementPrice(IFieldSet incrementEntry)
         {
             incrementEntry.GetDouble(270, _settlementPrice);
+            _settlPriceType = (SettlPriceType)incrementEntry.GetUInt8(731);
             _refreshed = true;
         }
 
@@ -112,6 +114,7 @@ namespace Epam.CmeMdp3Handler.MktData
             _sessionHighPrice.Reset(true);
             _sessionLowPrice.Reset(true);
             _settlementPrice.Reset(true);
+            _settlPriceType = null;
             _openInterest = 0;
             _clearedVolume = 0;
             _highLimitPrice.Reset(true);
@@ -129,6 +132,8 @@ namespace Epam.CmeMdp3Handler.MktData
         public double? OpeningPrice() => _openingPrice.AsNullableDouble();
 
         public double? SettlementPrice() => _settlementPrice.AsNullableDouble();
+
+        public SettlPriceType? SettlementPriceType() => _settlPriceType;
 
         public double? TradingSessionHighPrice() => _sessionHighPrice.AsNullableDouble();
 

@@ -10,6 +10,7 @@ namespace Epam.CmeMdp3Handler.MktData
         double? SessionHighBid();
         double? SessionLowOffer();
         double? SettlementPrice();
+        SettlPriceType? SettlementPriceType();
         int TradeVolume();
         double? TradingSessionHighPrice();
         double? TradingSessionLowPrice();

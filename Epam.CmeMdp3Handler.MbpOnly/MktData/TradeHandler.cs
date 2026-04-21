@@ -19,11 +19,11 @@ namespace Epam.CmeMdp3Handler.MktData
         {
         }
 
-        public void UpdateTradeSummary(IFieldSet tradeEntry)
+        public void UpdateTradeSummary(IFieldSet tradeEntry, bool isSnapshot)
         {
             var publicTradeEntity = new PublicTradeEntity();
-            publicTradeEntity.RefreshBookFromMessage(tradeEntry);
-            if (publicTradeEntity.GetAction() == MDUpdateAction.New)
+            publicTradeEntity.RefreshBookFromMessage(tradeEntry, isSnapshot);
+            if (publicTradeEntity.GetAction() == null || publicTradeEntity.GetAction() == MDUpdateAction.New)
                 _newTrades.Add(publicTradeEntity);
             else if (publicTradeEntity.GetAction() == MDUpdateAction.Change || publicTradeEntity.GetAction() == MDUpdateAction.Delete)
                 _adjustTrades.Add(publicTradeEntity);

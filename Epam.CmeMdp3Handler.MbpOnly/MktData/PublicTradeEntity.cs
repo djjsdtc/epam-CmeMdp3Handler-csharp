@@ -51,14 +51,14 @@
             this.tradeId = bookEntry.GetTradeId();
         }
 
-        public void RefreshBookFromMessage(IFieldSet fieldSet)
+        public void RefreshBookFromMessage(IFieldSet fieldSet, bool isSnapshot)
         {
-            this.action = MDUpdateActionExtensions.FromFIX(fieldSet.GetUInt8(279));
+            this.action = isSnapshot ? null : MDUpdateActionExtensions.FromFIX(fieldSet.GetUInt8(279));
             fieldSet.GetDouble(270, this.tradePrice);
             this.quantity = fieldSet.GetInt32(271);
-            this.numberOfOrders = fieldSet.GetInt32(346);
-            this.aggressorSide = SideExtensions.FromFIX((sbyte)fieldSet.GetUInt8(5797));
-            this.tradeId = (uint)fieldSet.GetUInt32(37711);
+            this.numberOfOrders = fieldSet.IsNull(346) ? 0 : fieldSet.GetInt32(346);
+            this.aggressorSide = isSnapshot ? null : SideExtensions.FromFIX((sbyte)fieldSet.GetUInt8(5797));
+            this.tradeId = isSnapshot ? 0 : (uint)fieldSet.GetUInt32(37711);
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Epam.CmeMdp3Handler.Control
                         break;
                     case MDEntryType.Trade:
                         // Only last trade price, should not process as trade.
-                        //_tradeHandler?.UpdateTradeSummary(mdpGroupObj);
+                        _tradeHandler?.UpdateTradeSummary(mdpGroupObj, true);
                         break;
                     case MDEntryType.OpeningPrice:
                         _statisticsHandler?.UpdateOpeningPrice(mdpGroupObj);
@@ -210,7 +210,7 @@ namespace Epam.CmeMdp3Handler.Control
                     _multipleDepthBookHandler?.HandleIncrementOfferEntry(incrementEntry);
                     break;
                 case MDEntryType.Trade:
-                    _tradeHandler?.UpdateTradeSummary(incrementEntry);
+                    _tradeHandler?.UpdateTradeSummary(incrementEntry, false);
                     break;
                 case MDEntryType.OpeningPrice:
                     _statisticsHandler?.UpdateOpeningPrice(incrementEntry);
