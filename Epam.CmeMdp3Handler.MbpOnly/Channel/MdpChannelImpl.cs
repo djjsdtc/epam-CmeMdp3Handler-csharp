@@ -37,12 +37,12 @@ namespace Epam.CmeMdp3Handler.Channel
         private Thread? _instrumentFeedAThread;
         private Thread? _instrumentFeedBThread;
 
-        private string? _incrementalFeedAni;
-        private string? _incrementalFeedBni;
-        private string? _snapshotFeedAni;
-        private string? _snapshotFeedBni;
-        private string? _instrumentFeedAni;
-        private string? _instrumentFeedBni;
+        private MulticastBindingOption _incrementalFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _incrementalFeedBni = MulticastBindingOption.Default;
+        private MulticastBindingOption _snapshotFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _snapshotFeedBni = MulticastBindingOption.Default;
+        private MulticastBindingOption _instrumentFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _instrumentFeedBni = MulticastBindingOption.Default;
 
         private volatile Feed _snptFeedToUse = Feed.A;
 
@@ -86,12 +86,12 @@ namespace Epam.CmeMdp3Handler.Channel
         public void SetGapThreshold(int gapThreshold) => _gapThreshold = gapThreshold;
         public void SetIdleWindowInMillis(long ms) => _idleWindowInMillis = ms;
 
-        public void SetSnapshotFeedAni(string? v) => _snapshotFeedAni = v;
-        public void SetSnapshotFeedBni(string? v) => _snapshotFeedBni = v;
-        public void SetIncrementalFeedAni(string? v) => _incrementalFeedAni = v;
-        public void SetIncrementalFeedBni(string? v) => _incrementalFeedBni = v;
-        public void SetInstrumentFeedAni(string? v) => _instrumentFeedAni = v;
-        public void SetInstrumentFeedBni(string? v) => _instrumentFeedBni = v;
+        public void SetSnapshotFeedAni(MulticastBindingOption v) => _snapshotFeedAni = v;
+        public void SetSnapshotFeedBni(MulticastBindingOption v) => _snapshotFeedBni = v;
+        public void SetIncrementalFeedAni(MulticastBindingOption v) => _incrementalFeedAni = v;
+        public void SetIncrementalFeedBni(MulticastBindingOption v) => _incrementalFeedBni = v;
+        public void SetInstrumentFeedAni(MulticastBindingOption v) => _instrumentFeedAni = v;
+        public void SetInstrumentFeedBni(MulticastBindingOption v) => _instrumentFeedBni = v;
         public void SetRcvBufSize(int size) => _rcvBufSize = size;
 
         private static void WaitForThread(Thread? thread)
