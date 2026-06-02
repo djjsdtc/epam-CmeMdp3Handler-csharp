@@ -14,12 +14,12 @@ namespace Epam.CmeMdp3Handler.Channel
         private Uri? _schemaUri;
         private MdpMessageTypes? _mdpMessageTypes;
 
-        private string? _incrementalFeedAni;
-        private string? _incrementalFeedBni;
-        private string? _snapshotFeedAni;
-        private string? _snapshotFeedBni;
-        private string? _instrumentFeedAni;
-        private string? _instrumentFeedBni;
+        private MulticastBindingOption _incrementalFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _incrementalFeedBni = MulticastBindingOption.Default;
+        private MulticastBindingOption _snapshotFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _snapshotFeedBni = MulticastBindingOption.Default;
+        private MulticastBindingOption _instrumentFeedAni = MulticastBindingOption.Default;
+        private MulticastBindingOption _instrumentFeedBni = MulticastBindingOption.Default;
 
         private IChannelListener? _channelListener;
         private bool _noScheduler = false;
@@ -55,8 +55,9 @@ namespace Epam.CmeMdp3Handler.Channel
             return this;
         }
 
-        public MdpChannelBuilder SetNetworkInterface(FeedType feedType, Feed feed, string networkInterface)
+        public MdpChannelBuilder SetNetworkInterface(FeedType feedType, Feed feed, MulticastBindingOption networkInterface)
         {
+            networkInterface ??= MulticastBindingOption.Default;
             if (feedType == FeedType.I)
             {
                 if (feed == Feed.A) _incrementalFeedAni = networkInterface;
