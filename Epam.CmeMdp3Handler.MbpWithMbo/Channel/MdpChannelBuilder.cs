@@ -38,8 +38,8 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
         private Uri? _schemaUri;
 
         // Per-feedType per-feed network interfaces
-        private readonly Dictionary<FeedType, string?> _feedANetworkInterfaces = new();
-        private readonly Dictionary<FeedType, string?> _feedBNetworkInterfaces = new();
+        private readonly Dictionary<FeedType, MulticastBindingOption> _feedANetworkInterfaces = new();
+        private readonly Dictionary<FeedType, MulticastBindingOption> _feedBNetworkInterfaces = new();
 
         private IChannelListener? _channelListener;
         private DefaultScheduledServiceHolder.SchedulerHolder? _scheduler;
@@ -83,8 +83,9 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
         /// Sets the local network interface for a specific feed type and feed side.
         /// If set to null the default local network interface is used.
         /// </summary>
-        public MdpChannelBuilder SetNetworkInterface(FeedType feedType, Feed feed, string? networkInterface)
+        public MdpChannelBuilder SetNetworkInterface(FeedType feedType, Feed feed, MulticastBindingOption networkInterface)
         {
+            networkInterface ??= MulticastBindingOption.Default;
             if (feed == Feed.A) _feedANetworkInterfaces[feedType] = networkInterface;
             else if (feed == Feed.B) _feedBNetworkInterfaces[feedType] = networkInterface;
             return this;

@@ -52,8 +52,8 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
         // Feed workers: FeedType -> (worker, thread)
         private readonly Dictionary<FeedType, (MdpFeedWorker worker, Thread? thread)> _feedsA = new();
         private readonly Dictionary<FeedType, (MdpFeedWorker worker, Thread? thread)> _feedsB = new();
-        private readonly Dictionary<FeedType, string?> _feedANetworkInterfaces;
-        private readonly Dictionary<FeedType, string?> _feedBNetworkInterfaces;
+        private readonly Dictionary<FeedType, MulticastBindingOption> _feedANetworkInterfaces;
+        private readonly Dictionary<FeedType, MulticastBindingOption> _feedBNetworkInterfaces;
 
         private volatile Feed _snptFeedToUse = Feed.A;
         private readonly FeedListenerImpl _feedListener;
@@ -81,8 +81,8 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
             int maxNumberOfTcpAttempts,
             string tcpUsername,
             string tcpPassword,
-            Dictionary<FeedType, string?> feedANetworkInterfaces,
-            Dictionary<FeedType, string?> feedBNetworkInterfaces,
+            Dictionary<FeedType, MulticastBindingOption> feedANetworkInterfaces,
+            Dictionary<FeedType, MulticastBindingOption> feedBNetworkInterfaces,
             bool mboEnabled,
             IList<int>? mboIncrementMessageTemplateIds,
             IList<int>? mboSnapshotMessageTemplateIds,
@@ -215,7 +215,7 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
         public void StartFeed(FeedType feedType, Feed feed)
         {
             Dictionary<FeedType, (MdpFeedWorker, Thread?)> currentFeed;
-            Dictionary<FeedType, string?> networkInterfaces;
+            Dictionary<FeedType, MulticastBindingOption> networkInterfaces;
 
             if (_mboEnabled && feedType == FeedType.S)
                 throw new Core.Channel.MdpFeedException("It is not allowed to use MBP snapshot feed when MBO is enabled");
@@ -243,7 +243,8 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
                     {
                         ConnectionCfg? cfg = _channelCfg.GetConnectionCfg(feedType, feed);
                         if (cfg == null) return;
-                        networkInterfaces.TryGetValue(feedType, out string? ni);
+                        if (!networkInterfaces.TryGetValue(feedType, out MulticastBindingOption ni))
+                            ni = MulticastBindingOption.Default;
                         var worker = new MdpFeedWorker(cfg, ni, _rcvBufSize);
                         worker.AddListener(_feedListener);
                         currentFeed[feedType] = (worker, null);
