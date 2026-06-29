@@ -45,7 +45,7 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
             var d = (SbeBufferImpl)dest;
             if (d._data.Length < _length)
                 d._data = new byte[_length];
-            Buffer.BlockCopy(_data, 0, d._data, 0, _length);
+            Buffer.BlockCopy(_data, _offset, d._data, 0, _length);
             d._length = _length;
         }
 
@@ -59,17 +59,17 @@ namespace Epam.CmeMdp3Handler.Sbe.Message
             var s = (SbeBufferImpl)src;
             if (_data.Length < s._length)
                 _data = new byte[s._length];
-            Buffer.BlockCopy(s._data, 0, _data, 0, s._length);
+            Buffer.BlockCopy(s._data, s._offset, _data, 0, s._length);
             _length = s._length;
         }
 
         public ISbeBuffer Copy()
         {
             var copy = new SbeBufferImpl();
-            CopyTo(copy);
-            copy._offset = _offset;
+            CopyTo(copy);           // copies _length bytes from _data[_offset] into copy._data[0]
+            copy._offset = 0;       // copy is self-contained: data starts at byte 0
             copy._length = _length;
-            copy._position = _position;
+            copy._position = _position - _offset;  // convert absolute position to relative
             return copy;
         }
 

@@ -23,10 +23,6 @@ namespace Epam.CmeMdp3Handler.Channel
         private readonly Dictionary<int, InstrumentController> _instruments = new();
         private int _msgCountDown = PrcdMsgCountNull;
 
-        private readonly SbeString _secDescString = SbeString.Allocate(100);
-        private readonly IMdpGroup _mdTypeGroup = SbeGroup.Instance();
-        private readonly SbeString _secMdFeedType = SbeString.Allocate(3);
-
         public ChannelInstruments(ChannelContext channelContext)
         {
             _channelContext = channelContext;
@@ -37,8 +33,8 @@ namespace Epam.CmeMdp3Handler.Channel
 
         public void OnMessage(MdpFeedContext feedContext, IMdpMessage secDefMsg)
         {
-            int subscriptionFlags = _channelContext.NotifySecurityDefinitionListeners(secDefMsg);
             byte depth = ExtractMaxDepthFromSecDef(secDefMsg);
+            int subscriptionFlags = _channelContext.NotifySecurityDefinitionListeners(secDefMsg);
             if (!MdEventFlags.IsNothing(subscriptionFlags))
             {
                 RegisterSecurity(secDefMsg, subscriptionFlags, depth);
@@ -99,8 +95,9 @@ namespace Epam.CmeMdp3Handler.Channel
         public void RegisterSecurity(IMdpMessage secDef, int subscriptionFlags, byte maxDepth)
         {
             int securityId = secDef.GetInt32(SecIdTag);
-            secDef.GetString(SecDescTag, _secDescString);
-            RegisterSecurity(securityId, _secDescString.GetString(), subscriptionFlags, maxDepth);
+            var secDescString = SbeString.Allocate(100);
+            secDef.GetString(SecDescTag, secDescString);
+            RegisterSecurity(securityId, secDescString.GetString(), subscriptionFlags, maxDepth);
         }
 
         public void UpdateSecDesc(int securityId, string secDesc)
@@ -184,13 +181,15 @@ namespace Epam.CmeMdp3Handler.Channel
 
         private byte ExtractMaxDepthFromSecDef(IMdpMessage secDef)
         {
-            secDef.GetGroup(SecMdFeedTypes, _mdTypeGroup);
-            while (_mdTypeGroup.HasNext())
+            var mdTypeGroup = SbeGroup.Instance();
+            var secMdFeedType = SbeString.Allocate(3);
+            secDef.Copy().GetGroup(SecMdFeedTypes, mdTypeGroup);
+            while (mdTypeGroup.HasNext())
             {
-                _mdTypeGroup.Next();
-                _mdTypeGroup.GetString(SecMdFeedType, _secMdFeedType);
-                if (_secMdFeedType.GetCharAt(_secMdFeedType.GetLength() - 1) == 'X')
-                    return (byte)_mdTypeGroup.GetInt8(SecMarketDepth);
+                mdTypeGroup.Next();
+                mdTypeGroup.GetString(SecMdFeedType, secMdFeedType);
+                if (secMdFeedType.GetCharAt(secMdFeedType.GetLength() - 1) == 'X')
+                    return (byte)mdTypeGroup.GetInt8(SecMarketDepth);
             }
             return SecDefaultMdDepth;
         }
