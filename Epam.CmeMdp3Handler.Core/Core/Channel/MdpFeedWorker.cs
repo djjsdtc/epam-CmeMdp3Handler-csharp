@@ -27,6 +27,7 @@ namespace Epam.CmeMdp3Handler.Core.Channel
         // AtomicReference<MdpFeedRtmState> replaced by volatile field + Interlocked
         private volatile int _feedState = (int)MdpFeedRtmState.STOPPED;
 
+        private readonly object _socketLock = new object();
         private Socket? _socket;
         private MdpFeedContext? _feedContext;
 
@@ -58,7 +59,9 @@ namespace Epam.CmeMdp3Handler.Core.Channel
         public bool Shutdown()
         {
             bool res = TrySetState(MdpFeedRtmState.ACTIVE, MdpFeedRtmState.PENDING_SHUTDOWN);
-            if (res) _socket?.Close(); // wakes up blocking receive
+            if (res)
+                lock (_socketLock)
+                    _socket?.Close(); // wakes up blocking receive
             return res;
         }
 
@@ -105,56 +108,62 @@ namespace Epam.CmeMdp3Handler.Core.Channel
 
         private void Open()
         {
-            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, _rcvBufSize);
-            _socket.Bind(new IPEndPoint(IPAddress.Any, _cfg.Port));
-
-            var groupAddress = IPAddress.Parse(_cfg.Ip);
-            var localAddresses = new List<IPAddress>();
-            switch (_multicastBindingOption.BindingMode)
+            lock (_socketLock)
             {
-                case MulticastBindingMode.IpAddrAny:
-                    localAddresses.Add(IPAddress.Any);
-                    break;
-                case MulticastBindingMode.AllNI:
-                    foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
-                    {
-                        foreach (var addr in ni.GetIPProperties().UnicastAddresses)
-                            if (addr.Address.AddressFamily == AddressFamily.InterNetwork)
-                                localAddresses.Add(addr.Address);
-                    }
-                    break;
-                case MulticastBindingMode.SpecifiedNI:
-                    foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
-                    {
-                        if (_multicastBindingOption.InterfacesOrAddresses.Contains(ni.Name))
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, _rcvBufSize);
+                _socket.Bind(new IPEndPoint(IPAddress.Any, _cfg.Port));
+
+                var groupAddress = IPAddress.Parse(_cfg.Ip);
+                var localAddresses = new List<IPAddress>();
+                switch (_multicastBindingOption.BindingMode)
+                {
+                    case MulticastBindingMode.IpAddrAny:
+                        localAddresses.Add(IPAddress.Any);
+                        break;
+                    case MulticastBindingMode.AllNI:
+                        foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
                         {
                             foreach (var addr in ni.GetIPProperties().UnicastAddresses)
                                 if (addr.Address.AddressFamily == AddressFamily.InterNetwork)
                                     localAddresses.Add(addr.Address);
                         }
-                    }
-                    break;
-                case MulticastBindingMode.SpecifiedLocalAddr:
-                    foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
-                    {
-                        foreach (var addr in ni.GetIPProperties().UnicastAddresses)
-                            if (addr.Address.AddressFamily == AddressFamily.InterNetwork &&
-                                _multicastBindingOption.InterfacesOrAddresses.Contains(addr.Address.ToString()))
-                                localAddresses.Add(addr.Address);
-                    }
-                    break;
+                        break;
+                    case MulticastBindingMode.SpecifiedNI:
+                        foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+                        {
+                            if (_multicastBindingOption.InterfacesOrAddresses.Contains(ni.Name))
+                            {
+                                foreach (var addr in ni.GetIPProperties().UnicastAddresses)
+                                    if (addr.Address.AddressFamily == AddressFamily.InterNetwork)
+                                        localAddresses.Add(addr.Address);
+                            }
+                        }
+                        break;
+                    case MulticastBindingMode.SpecifiedLocalAddr:
+                        foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+                        {
+                            foreach (var addr in ni.GetIPProperties().UnicastAddresses)
+                                if (addr.Address.AddressFamily == AddressFamily.InterNetwork &&
+                                    _multicastBindingOption.InterfacesOrAddresses.Contains(addr.Address.ToString()))
+                                    localAddresses.Add(addr.Address);
+                        }
+                        break;
+                }
+                foreach (var localAddr in localAddresses)
+                    _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
+                        new MulticastOption(groupAddress, localAddr));
             }
-            foreach (var localAddr in localAddresses)
-                _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
-                    new MulticastOption(groupAddress, localAddr));
         }
 
         private void Close()
         {
-            _socket?.Close();
-            _socket = null;
+            lock (_socketLock)
+            {
+                _socket?.Close();
+                _socket = null;
+            }
         }
 
         private void ReceiveAndNotify(byte[] buf, MdpPacket packet)
