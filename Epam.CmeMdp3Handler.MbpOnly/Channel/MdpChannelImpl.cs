@@ -199,7 +199,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _incrementalFeedA = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.I, Feed.A)!, _incrementalFeedAni, _rcvBufSize);
                         _incrementalFeedA.AddListener(_mdpFeedListener);
                     }
-            if (!_incrementalFeedA.CancelShutdownIfStarted() && !_incrementalFeedA.IsActive())
+            if (!_incrementalFeedA.IsActive())
             {
                 _incrementalFeedAThread = new Thread(_incrementalFeedA.Run) { IsBackground = true };
                 _incrementalFeedAThread.Start();
@@ -215,7 +215,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _incrementalFeedB = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.I, Feed.B)!, _incrementalFeedBni, _rcvBufSize);
                         _incrementalFeedB.AddListener(_mdpFeedListener);
                     }
-            if (!_incrementalFeedB.CancelShutdownIfStarted() && !_incrementalFeedB.IsActive())
+            if (!_incrementalFeedB.IsActive())
             {
                 _incrementalFeedBThread = new Thread(_incrementalFeedB.Run) { IsBackground = true };
                 _incrementalFeedBThread.Start();
@@ -231,7 +231,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _snapshotFeedA = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.S, Feed.A)!, _snapshotFeedAni, _rcvBufSize);
                         _snapshotFeedA.AddListener(_mdpFeedListener);
                     }
-            if (!_snapshotFeedA.CancelShutdownIfStarted() && !_snapshotFeedA.IsActive())
+            if (!_snapshotFeedA.IsActive())
             {
                 _snapshotFeedAThread = new Thread(_snapshotFeedA.Run) { IsBackground = true };
                 _snapshotFeedAThread.Start();
@@ -247,7 +247,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _snapshotFeedB = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.S, Feed.B)!, _snapshotFeedBni, _rcvBufSize);
                         _snapshotFeedB.AddListener(_mdpFeedListener);
                     }
-            if (!_snapshotFeedB.CancelShutdownIfStarted() && !_snapshotFeedB.IsActive())
+            if (!_snapshotFeedB.IsActive())
             {
                 _snapshotFeedBThread = new Thread(_snapshotFeedB.Run) { IsBackground = true };
                 _snapshotFeedBThread.Start();
@@ -263,7 +263,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _instrumentFeedA = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.N, Feed.A)!, _instrumentFeedAni, _rcvBufSize);
                         _instrumentFeedA.AddListener(_mdpFeedListener);
                     }
-            if (!_instrumentFeedA.CancelShutdownIfStarted() && !_instrumentFeedA.IsActive())
+            if (!_instrumentFeedA.IsActive())
             {
                 _instrumentFeedAThread = new Thread(_instrumentFeedA.Run) { IsBackground = true };
                 _instrumentFeedAThread.Start();
@@ -279,7 +279,7 @@ namespace Epam.CmeMdp3Handler.Channel
                         _instrumentFeedB = new MdpFeedWorker(_channelCfg.GetConnectionCfg(FeedType.N, Feed.B)!, _instrumentFeedBni, _rcvBufSize);
                         _instrumentFeedB.AddListener(_mdpFeedListener);
                     }
-            if (!_instrumentFeedB.CancelShutdownIfStarted() && !_instrumentFeedB.IsActive())
+            if (!_instrumentFeedB.IsActive())
             {
                 _instrumentFeedBThread = new Thread(_instrumentFeedB.Run) { IsBackground = true };
                 _instrumentFeedBThread.Start();
