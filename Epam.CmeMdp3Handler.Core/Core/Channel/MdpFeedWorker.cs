@@ -54,7 +54,6 @@ namespace Epam.CmeMdp3Handler.Core.Channel
         public bool IsShutdown() => GetState() is MdpFeedRtmState.PENDING_SHUTDOWN or MdpFeedRtmState.SHUTDOWN;
         public bool IsActiveAndNotShutdown() => IsActive(); // review this later
 
-        public bool CancelShutdownIfStarted() => TrySetState(MdpFeedRtmState.PENDING_SHUTDOWN, MdpFeedRtmState.ACTIVE);
 
         public bool Shutdown()
         {
@@ -91,7 +90,26 @@ namespace Epam.CmeMdp3Handler.Core.Channel
             while (!TrySetState(MdpFeedRtmState.PENDING_SHUTDOWN, MdpFeedRtmState.SHUTDOWN))
             {
                 try { ReceiveAndNotify(buf, packet); }
-                catch (SocketException) { /* socket closed on shutdown */ break; }
+                catch (SocketException e)
+                {
+                    if (TrySetState(MdpFeedRtmState.PENDING_SHUTDOWN, MdpFeedRtmState.SHUTDOWN))
+                        break; // planned shutdown — exit loop and clean up
+
+                    // Unexpected error (e.g. ICMP ConnectionReset on Windows, NIC down) while ACTIVE.
+                    // Reopen the socket and continue receiving without surfacing a stop/start to listeners.
+                    _logger.LogWarning(e, "Unexpected socket error on feed {FeedId}, reopening socket", _cfg.Id);
+                    Close();
+                    try { Open(); }
+                    catch (Exception reopenEx)
+                    {
+                        _logger.LogError(reopenEx, "Failed to reopen feed {FeedId} after error, stopping", _cfg.Id);
+                        if (!TrySetState(MdpFeedRtmState.ACTIVE, MdpFeedRtmState.SHUTDOWN))
+                        {
+                            _logger.LogWarning("Failed to switch state from ACTIVE to SHUTDOWN. Current state: {0}", (MdpFeedRtmState)_feedState);
+                        }
+                        break;
+                    }
+                }
                 catch (Exception e) { _logger.LogError(e, "Exception in message loop"); }
             }
 
@@ -101,9 +119,9 @@ namespace Epam.CmeMdp3Handler.Core.Channel
                 Close();
                 packet.Release();
                 NotifyStopped();
-                TrySetState(MdpFeedRtmState.SHUTDOWN, MdpFeedRtmState.STOPPED);
             }
             catch (Exception e) { _logger.LogError(e, "Failed to stop Feed"); }
+            finally { TrySetState(MdpFeedRtmState.SHUTDOWN, MdpFeedRtmState.STOPPED); }
         }
 
         private void Open()
