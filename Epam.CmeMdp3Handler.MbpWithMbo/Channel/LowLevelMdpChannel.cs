@@ -253,14 +253,11 @@ namespace Epam.CmeMdp3Handler.MbpWithMbo.Channel
             }
 
             var (mdpFeedWorker, thread) = currentFeed[feedType];
-            if (!mdpFeedWorker.CancelShutdownIfStarted())
+            if (!mdpFeedWorker.IsActive())
             {
-                if (!mdpFeedWorker.IsActive())
-                {
-                    var newThread = new Thread(mdpFeedWorker.Run) { IsBackground = true };
-                    currentFeed[feedType] = (mdpFeedWorker, newThread);
-                    newThread.Start();
-                }
+                var newThread = new Thread(mdpFeedWorker.Run) { IsBackground = true };
+                currentFeed[feedType] = (mdpFeedWorker, newThread);
+                newThread.Start();
             }
         }
 
